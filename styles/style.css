@@ -1,0 +1,70 @@
+html {background-color: azure;}
+
+/*h1,
+h2,
+p,
+label,
+table */
+
+body {
+  /*font-family: 'Inter', sans-serif;*/
+  font-family: Calibri;
+}
+
+/*h1,
+h2,
+p {
+  text-align: center;
+}*/
+
+
+textarea {
+  /*width: 1000px;
+  height: 400px;*/
+  resize: none;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  position: relative;
+  left: 0%;
+  /*display: block;
+  margin-left: auto;
+  margin-right: auto;*/
+  /*color: white;
+  background-color: black;*/
+}
+
+.app-container {
+  display: flex;
+/*  margin: auto;
+  width: 50%;
+  padding: 10px;*/
+}
+
+.textarea-container {
+  /*position: absolute;*/
+  width: 570px;
+}
+
+.parameter-container {
+  flex: 1;
+  /*position: absolute;*/
+  /*left: 38%;*/
+}
+
+.arpabet-container {
+  /*position: absolute;*/
+  /*top: 60%;*/
+}
+
+button {
+  margin-top: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/*
+.formant-shift-container {
+  position: absolute;
+  left: 0%;
+  top: 0%;
+}*/
