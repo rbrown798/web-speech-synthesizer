@@ -2,49 +2,242 @@
 * Parallel Formant Speech Synthesizer 
 */
 
+// TODO: Make nasal phonemes work.
+
 
 // Parameters for synthesizing each phoneme
 const PHONEMES = {
-  iy: { type: "vowel", freqs: [270, 2290, 3010] },
-  ih: { type: "vowel", freqs: [390, 1990, 2550] },
-  ey: { type: "vowel", freqs: [480, 1720, 2520] },
-  eh: { type: "vowel", freqs: [530, 1840, 2480] },
-  er: { type: "vowel", freqs: [490, 1350, 1690] },
-  ae: { type: "vowel", freqs: [660, 1720, 2410] },
-  aa: { type: "vowel", freqs: [730, 1090, 2440] },
-  ao: { type: "vowel", freqs: [600,  990, 2570] },
-  ah: { type: "vowel", freqs: [570,  840, 2410] },
-  ow: { type: "vowel", freqs: [414,  721, 2406] },
-  uh: { type: "vowel", freqs: [440, 1020, 2240] },
-  uw: { type: "vowel", freqs: [300,  870, 2240] },
-  ax: { type: "vowel", freqs: [470, 1270, 1540] },  
-  ay: { type: "vowel", freqs: [660, 1200, 2550] },
-  aw: { type: "vowel", freqs: [640, 1230, 2550] },
-  oy: { type: "vowel", freqs: [550,  960, 2400] },
+  
+  // Vowels --------------------------------------
 
-  w: { type: "approximant", freqs: [290,  610, 2150] },
-  y: { type: "approximant", freqs: [260, 2070, 3020] },
-  r: { type: "approximant", freqs: [310, 1060, 1380] },
-  l: { type: "approximant", freqs: [310, 1050, 2880] },
+  iy: { 
+    type  : "vowel", 
+    freqs : [270, 2290, 3010] 
+  },
+  ih: { 
+    type  : "vowel", 
+    freqs : [390, 1990, 2550] 
+  },
+  ey: { 
+    type  : "vowel", 
+    freqs : [480, 1720, 2520] 
+  },
+  eh: { 
+    type  : "vowel", 
+    freqs : [530, 1840, 2480] 
+  },
+  er: { 
+    type  : "vowel", 
+    freqs : [490, 1350, 1690] 
+  },
+  ae: { 
+    type  : "vowel", 
+    freqs : [660, 1720, 2410] 
+  },
+  aa: { 
+    type  : "vowel", 
+    freqs : [730, 1090, 2440] 
+  },
+  ao: { 
+    type  : "vowel", 
+    freqs : [600,  990, 2570] 
+  },
+  ah: { 
+    type  : "vowel", 
+    freqs : [570,  840, 2410] 
+  },
+  ow: { 
+    type  : "vowel", 
+    freqs : [414,  721, 2406] 
+  },
+  uh: { 
+    type  : "vowel", 
+    freqs : [440, 1020, 2240] 
+  },
+  uw: { 
+    type  : "vowel", 
+    freqs : [300,  870, 2240] 
+  },
+  ax: { 
+    type  : "vowel", 
+    freqs : [470, 1270, 1540] 
+  },  
+  ay: { 
+    type  : "vowel", 
+    freqs : [660, 1200, 2550] 
+  },
+  aw: { 
+    type  : "vowel", 
+    freqs : [640, 1230, 2550] 
+  },
+  oy: { 
+    type  : "vowel", 
+    freqs : [550,  960, 2400] 
+  },
 
-  m: { type: "nasal", freqs: [450, 1270, 2130] },
-  n: { type: 'nasal', freqs: [450, 1340, 2470] },
+  // Approximants --------------------------------
 
-  s: { type: "fricative", freqs: [4600, 0, 0], muls: [1.0, 0, 0] },
-  sh: { type: "fricative", freqs: [2350, 0, 0], muls: [1.0, 0, 0] },
-  f: { type: 'fricative', freqs: [2000, 0, 0], muls: [1.0, 0, 0] },
-  th: { type: 'fricative', freqs: [1575, 0, 0], muls: [1.0, 0, 0] },
+  w: { 
+    type  : "approximant", 
+    freqs : [290,  610, 2150] 
+  },
+  y: { 
+    type  : "approximant", 
+    freqs : [260, 2070, 3020] 
+  },
+  r: { 
+    type  : "approximant", 
+    freqs : [310, 1060, 1380] 
+  },
+  l: { 
+    type  : "approximant", 
+    freqs : [310, 1050, 2880] 
+  },
 
-  z: { type: "fricative", voiced: true, freqs: [4600, 0, 0], muls: [1.0, 0, 0] },
-  v: { type: 'fricative', voiced: true, freqs: [2000, 0, 0], muls: [1.0, 0, 0] },
-  dh: { type: 'fricative', voiced: true, freqs: [1575, 0, 0], muls: [1.0, 0, 0] },
+  // Nasals --------------------------------------
 
+  m: { 
+    type  : "nasal", 
+    freqs : [450, 1270, 2130] 
+  },
+  n: { 
+    type  : 'nasal', 
+    freqs : [450, 1340, 2470] 
+  },
+  ng: { 
+    type  : 'nasal', 
+    freqs : [450, 2208, 3079] 
+  },
 
-  t: { type: 'stop-consonant', oscFreqs: [400, 1600, 2600], noiseFreqs: [1902, 2913, 4040], noiseGains: [0.8, 0.2, 1, 0] },
-  g: { type: 'stop-consonant', voiced: true, oscFreqs: [200, 1990, 2850], noiseFreqs: [1928, 4110, 4570], noiseGains: [0.8, 0.2, 1, 0] }, // added zero but weird
+  // Fricatives ----------------------------------
 
+  s: { 
+    type   : 'fricative', 
+    freqs  : [4600, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+  z: { 
+    type   : "fricative", 
+    voiced : true, 
+    freqs  : [4600, 0, 0], 
+    muls   : [1.0, 0, 0] },
+  sh: { 
+    type   : 'fricative', 
+    freqs  : [2350, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+  zh: { 
+    type   : 'fricative', 
+    voiced : true,
+    freqs  : [2350, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+  f: { 
+    type   : 'fricative', 
+    freqs  : [2000, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+  v: { 
+    type   : 'fricative', 
+    voiced : true, 
+    freqs  : [2000, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+  th: { 
+    type   : 'fricative', 
+    freqs  : [1575, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+  dh: { 
+    type   : 'fricative', 
+    voiced : true, 
+    freqs  : [1575, 0, 0], 
+    muls   : [1.0, 0, 0] 
+  },
+
+  // Stop Consonants ----------------------------- 
+
+  p: {
+    type           : 'stop-consonant', 
+    oscFreqs       : [400, 1100, 2150], 
+    noiseFreqs     : [1765, 2672, 4818], 
+    noiseGains     : [1, 0.8, 0.2, 0],
+    voiceOnsetTime : 0.02
+  },
+
+  b: {
+    type           : 'stop-consonant', 
+    voiced         : true,
+    oscFreqs       : [200, 1100, 2150], 
+    noiseFreqs     : [1765, 2672, 4818], 
+    noiseGains     : [1, 0.8, 0.2, 0],
+    voiceOnsetTime : 0.01
+  },
+
+  t: { 
+    type           : 'stop-consonant', 
+    oscFreqs       : [400, 1600, 2600], 
+    noiseFreqs     : [1902, 2913, 4040], 
+    noiseGains     : [0.8, 0.2, 1, 0],
+    voiceOnsetTime : 0.04
+  },
+
+  d: { 
+    type           : 'stop-consonant', 
+    voiced         : true, 
+    oscFreqs       : [200, 1600, 2600], 
+    noiseFreqs     : [1902, 2913, 4040], 
+    noiseGains     : [0.8, 0.2, 1, 0],
+    voiceOnsetTime : 0.01
+  }, 
+
+  k: {
+    type           : 'stop-consonant', 
+    oscFreqs       : [300, 1990, 2850], 
+    noiseFreqs     : [1928, 4110, 4570], 
+    noiseGains     : [0.8, 0.2, 1, 0],
+    voiceOnsetTime : 0.03
+  },
+
+  g: { 
+    type           : 'stop-consonant', 
+    voiced         : true, 
+    oscFreqs       : [200, 1990, 2850], 
+    noiseFreqs     : [1928, 4110, 4570], 
+    noiseGains     : [0.8, 0.2, 1, 0],    // added zero but weird
+    voiceOnsetTime : 0.03
+  }, 
+
+  // Affricates ----------------------------------
+  // NOTE: Eventually these might have there own type value for distinguishing envelope durations
+  ch: { 
+    type           : 'stop-consonant', 
+    oscFreqs       : [400, 1600, 2600], 
+    noiseFreqs     : [2778, 3514, 4397], 
+    noiseGains     : [0.65, 0.69, 0.59, 0],    // added zero but weird
+    voiceOnsetTime : 0.03
+  },
+  j: {
+    type           : 'stop-consonant', 
+    Voiced         : true,
+    oscFreqs       : [200, 1600, 2600], 
+    noiseFreqs     : [2725, 3298, 4553], 
+    noiseGains     : [1.0, 0.2, 0.8, 0],    // added zero but weird
+    voiceOnsetTime : 0.03
+  }
 
 };
+
+DURATIONS = {
+  aspirate       : 0.1,
+  pause          : 0.1,
+
+  vowel          : 0.2,
+  approximant    : 0.1,
+  nasal          : 0.1,
+  fricative      : 0.1,
+  stopConsonant  : 0.08
+}
 
 
 class AudioComponent {
@@ -358,6 +551,8 @@ class SpeechSynthesizer {
     this.filterBank.soundOff(time);
     this.filterBank.soundOn(time+0.5);
     this.lastPhoneme = null;
+
+    // return DURATIONS['pause'] * 1/this.speed;
     return 0.25 * 1/this.speed;
   }
 
@@ -365,15 +560,16 @@ class SpeechSynthesizer {
     this.useNoiseSource(time);
     this.noiseSource.amplitudeModOff(time);
     
-    // The 'HH' sound is an aspirated of the next phoneme. If the next phoneme isn't a vowel, or doesn't exist, 
-    // default to using the formant frequencies of the 'AA' sound
+    /* The 'HH' sound is an aspirated of the next phoneme. If the next phoneme isn't a vowel, or doesn't exist, 
+       default to using the formant frequencies of the 'AA' sound */
     const nextPhoneme = PHONEMES[nextPhonemeName];
     if (nextPhoneme?.type === 'vowel') {
       this.filterBank.setFreqs(nextPhoneme.freqs, time, 0.0);
     } else {
       this.filterBank.setFreqs(PHONEMES['aa'].freqs, time, 0.0);
     }
-    return 0.25 * 1/this.speed;
+    // return 0.25 * 1/this.speed;
+    return DURATIONS['aspirate'] * 1/this.speed;
   }
 
   handlePhoneme(phonemeName, time) {
@@ -404,29 +600,50 @@ class SpeechSynthesizer {
   }
 
   handleVowel(phoneme, time) {
-    this.handleSonorant(phoneme, time, 0.05);
-    return 0.25 * 1/this.speed; 
+    if (this.lastPhoneme?.type === 'stop-consonant') {
+      this.handleOffGlide(phoneme, time);
+    } 
+    else {
+      this.handleSonorant(phoneme, time, 0.05);
+    }
+    // return 0.25 * 1/this.speed; 
+    return DURATIONS['vowel'] * 1/this.speed;
   }
 
   handleApproximant(phoneme, time) {
     this.handleSonorant(phoneme, time, 0.02);
-    return 0.05 * 1/this.speed;
+    // return 0.05 * 1/this.speed;
+    return DURATIONS['approximant'] * 1/this.speed;
   }
 
   handleNasal(phoneme, time) {
-    this.handleSonorant(phoneme, time, 0.01);
-    // this.filterBank.nasalFormantOn(time);
-    return 0.05 * 1/this.speed;
+    let duration = 0.01
+    if (!this.lastPhoneme || this.lastPhoneme.type == 'fricative') {
+      duration = 0.0;
+    }
+
+    if (this.useNoiseOnly) {
+      this.useNoiseSource(time);
+      this.noiseSource.amplitudeModOff(time);
+    } else {
+      this.useOscillatorSource(time);
+    }
+    // Use 4th formant filter, set at 270 for nasal cavity resonance 
+    this.filterBank.setFreqs([...phoneme.freqs, 270], time, duration);
+    this.filterBank.setGains([0.3, 0.1, 0.1, 1.0], time, duration);
+    // return 0.05 * 1/this.speed;
+    return DURATIONS['nasal'] * 1/this.speed;
   } 
 
   // Synthesize a sonorant sound 
   handleSonorant(phoneme, time, duration=0.05) { 
     // If the last phoneme was a sonorant, transition smoothly. If it was a fricative, transition abruptly  
     if (!this.lastPhoneme || this.lastPhoneme.type == 'fricative') {
-      duration = 0.0;
+      duration = 0.01; // Not zero just to prevent pop sound
     }
     if (this.useNoiseOnly) {
       this.useNoiseSource(time);
+      this.noiseSource.amplitudeModOff(time);
     } else {
       this.useOscillatorSource(time);
     }
@@ -445,13 +662,15 @@ class SpeechSynthesizer {
     this.filterBank.setFreqs(phoneme.freqs, time, 0.0);
     this.filterBank.setGains([1, 0, 0, 0], time, 0.0);
     // this.filterBank.setGains(phoneme.muls, startTime, 0.0); // This needs to be modified since there are more than 3 filters 
-    return 0.25 * 1/this.speed;
+    // return 0.25 * 1/this.speed;
+    return DURATIONS['fricative'] * 1/this.speed;
   }
 
   handleStopConsonant(phoneme, time) {
     this.handleOnGlide(phoneme, time);
     this.handleNoiseBurst(phoneme, time+0.05);
-    return 0.1 * 1/this.speed;
+    // return 0.1 * 1/this.speed;
+    return DURATIONS['stopConsonant'] * 1/this.speed;
   }
 
   handleOnGlide(phoneme, time) {
@@ -470,11 +689,25 @@ class SpeechSynthesizer {
     this.filterBank.setFreqs(phoneme.noiseFreqs, time, 0.0);
     this.filterBank.setGains(phoneme.noiseGains, time, 0.0);
     this.filterBank.soundOn(time);
+    this.noiseSource.amplitudeModOff(time);
     this.noiseSource.playEnvelope(time);
   }
 
   handleOffGlide(phoneme, time) {
+  /* Called when a sonorant begins after a stop consonant */
+    this.filterBank.soundOff(time);
+    this.filterBank.setFreqs(this.lastPhoneme.oscFreqs, time, 0.0);
 
+    const startTime = time + this.lastPhoneme.voiceOnsetTime;  // The delay is different depending on the consonant 
+
+    this.filterBank.soundOn(startTime);
+
+    if (this.lastPhoneme.voiced) {
+      this.handleSonorant(phoneme, startTime, 0.05);  // Vowels following voiced stop consonants will have formant transitions
+    }
+    else {
+      this.handleSonorant(phoneme, startTime, 0.0); // Vowels following unvoiced stop consonants will not
+    }
   }  
 
   useOscillatorSource(time) {
