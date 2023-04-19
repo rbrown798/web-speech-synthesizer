@@ -7,8 +7,10 @@ label,
 table */
 
 body {
-  /*font-family: 'Inter', sans-serif;*/
-  font-family: Calibri;
+  /*font-family: Calibri;*/
+  margin-left: 200px;
+  margin-right: 200px;
+  margin-top: 30px;
 }
 
 /*h1,
@@ -46,9 +48,30 @@ textarea {
 }
 
 .parameter-container {
-  flex: 1;
+  display: flex;
+  /*flex: 1;*/
+  flex-direction: column;
+  width: 300px;
   /*position: absolute;*/
   /*left: 38%;*/
+}
+
+.param-row {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+}
+
+.param-label {
+  width: 110px;
+}
+
+#oscillator-select {
+  width: 110px;
+}
+
+.param-slider {
+  flex-wrap: wrap;
 }
 
 .arpabet-container {

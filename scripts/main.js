@@ -2,7 +2,9 @@
 * Parallel Formant Speech Synthesizer 
 */
 
-// TODO: Make nasal phonemes work.
+// TODO: Clean stuff up. handleNasal and handleSonorant do almost the same thing 
+// Fix popping from stop-consonants
+
 
 
 // Parameters for synthesizing each phoneme
@@ -426,7 +428,7 @@ class FilterBank extends AudioComponent {
     // Create a bank of 3 resonant bandpass filters 
     this.createFilterGains();
     const filters = [];
-    for (let i = 0; i < 4; i++) {                     // Change to 4 eventually 
+    for (let i = 0; i < 4; i++) {
       filters[i] = new BiquadFilterNode(this.context, {type: 'bandpass', Q: 15});
       filters[i].connect(this.filterGains[i]);
     }
@@ -500,7 +502,8 @@ class SpeechSynthesizer {
     if (type === 'noise') {
       this.useNoiseOnly = true;
       this.useNoiseSource(this.context.currentTime);
-    } else {
+    } 
+    else {
       this.useNoiseOnly = false;
       this.oscillatorSource.setOscillatorType(type);
     }
@@ -565,7 +568,8 @@ class SpeechSynthesizer {
     const nextPhoneme = PHONEMES[nextPhonemeName];
     if (nextPhoneme?.type === 'vowel') {
       this.filterBank.setFreqs(nextPhoneme.freqs, time, 0.0);
-    } else {
+    } 
+    else {
       this.filterBank.setFreqs(PHONEMES['aa'].freqs, time, 0.0);
     }
     // return 0.25 * 1/this.speed;
@@ -625,9 +629,11 @@ class SpeechSynthesizer {
     if (this.useNoiseOnly) {
       this.useNoiseSource(time);
       this.noiseSource.amplitudeModOff(time);
-    } else {
+    } 
+    else {
       this.useOscillatorSource(time);
     }
+
     // Use 4th formant filter, set at 270 for nasal cavity resonance 
     this.filterBank.setFreqs([...phoneme.freqs, 270], time, duration);
     this.filterBank.setGains([0.3, 0.1, 0.1, 1.0], time, duration);
@@ -635,29 +641,40 @@ class SpeechSynthesizer {
     return DURATIONS['nasal'] * 1/this.speed;
   } 
 
-  // Synthesize a sonorant sound 
   handleSonorant(phoneme, time, duration=0.05) { 
-    // If the last phoneme was a sonorant, transition smoothly. If it was a fricative, transition abruptly  
-    if (!this.lastPhoneme || this.lastPhoneme.type == 'fricative') {
-      duration = 0.01; // Not zero just to prevent pop sound
+    // If the last phoneme was also a sonorant, transition smoothly. 
+    // If there was no last phoneme (ie. if this is the beginning of a word), 
+    // or if the last phoneme was a fricative, transition abruptly  
+    if (!this.lastPhoneme) {
+      duration = 0.0;
+    } 
+    else if (this.lastPhoneme.type == 'fricative') {
+      duration = 0.01; // Slightly above zero to prevent popping caused by changing the filter frequencies abruptly
     }
+
+    // Use the oscillatorSource unless the waveform option is set to noise 
     if (this.useNoiseOnly) {
       this.useNoiseSource(time);
       this.noiseSource.amplitudeModOff(time);
-    } else {
+    } 
+    else {
       this.useOscillatorSource(time);
     }
+
+    // Set the filter parameters
     this.filterBank.setFreqs(phoneme.freqs, time, duration);
-    this.filterBank.setGains([1,1,1,0], time, 0.0);
+    this.filterBank.setGains([1, 1, 1, 0], time, 0.0);
   }
 
   handleFricative(phoneme, time) {
     // Voiced fricatives are synthesized with amplitude-modulated noise 
     if (phoneme.voiced) {
       this.noiseSource.amplitudeModOn(time);
-    } else {
+    } 
+    else {
       this.noiseSource.amplitudeModOff(time);
     }
+
     this.useNoiseSource(time);
     this.filterBank.setFreqs(phoneme.freqs, time, 0.0);
     this.filterBank.setGains([1, 0, 0, 0], time, 0.0);
