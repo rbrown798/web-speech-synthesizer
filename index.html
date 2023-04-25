@@ -8,126 +8,138 @@
   	<meta name="viewport" content="width=device-width" />
   	<title>Speech Synthesizer</title>
   	<link href="./styles/style.css" rel="stylesheet">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Poppins'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Work+Sans'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto+Mono'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Nunito+Sans'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
   </head>
 
   <body>
-  	
-  	<div>
-  	  <h1>Formant Speech Synthesis</h1>
-  	  <p><strong>Formant synthesis</strong> is a method of audio synthesis that models the resonances of a sound. Although it can be used as a technique of more general spectral modeling, it is most notable for it's ability to synthesize human speech. This speech synthesizer was made using the <a href="https://webaudioapi.com/samples/">Web Audio API</a>. It consists of an oscillator and a noise generator, both of which are fed through a series of resonant bandpass filters in a parallel configuration.</p> <!-- Many of the methods implemented were based on designs laid out in Dennis Klatt's <em>Software For A Parallel/Formant Speech Synthesizer</em>.</p> -->
-    </div>
 
-    <div class='app-container'>
+    <div class='content'>
 
-      <div class='textarea-container'>
-  	    <textarea id="text-field" rows="10" cols="50" spellcheck="false">HH EH L OW W ER L D</textarea>
-  	  </div>
+	  <div class="about-container">
+		<h1>Formant Speech Synthesis</h1>
+	  </div>
+	
+	  <div class="about-container">
+  	    <p><strong>Formant synthesis</strong> is a method of audio synthesis that models the spectral characteristics of a sound using resonant filters. Although it can be used as a technique in spectral modeling in general, it's most notable for it's ability to synthesize human speech.</p>
+		<p>This speech synthesizer was made using the <a href="https://webaudioapi.com/samples/">Web Audio API</a>. asdfj some other information about how things work and whatnot can go here I guess hello how are you today</p>
+	  </div>
 
-  	  <div class='parameter-container'>
+      <div class='app-container'>
 
-        <div class='param-row'>
-  	    <!-- <div class='oscillator-container'> -->
-          <div class='param-label'>
-  	  	    <label for="oscillator-select">Waveform:</label>
+        <div class='textarea-container'>
+  	      <textarea id="text-field" rows="10" cols="50" spellcheck="false">HH EH L OW W ER L D</textarea>
+  	    </div>
+
+  	    <div class='parameter-container'>
+
+          <div class='param-row'>
+  	      <!-- <div class='oscillator-container'> -->
+            <div class='param-label'>
+  	  	      <label for="oscillator-select">Waveform:</label>
+            </div>
+            <div class='param-select'>
+  	          <select name="oscillator" id="oscillator-select">
+  	            <option value="sawtooth">Sawtooth</option>
+  	            <option value="square">Square</option>
+  	            <option value="noise">Noise</option>
+  	          </select>
+            </div>
+
+  	      </div>
+
+          <div class='param-row'>
+            <div class='param-label'>
+  	          <label for="frequency">Pitch</label>
+            </div>
+            <div class='param-slider'>
+  	          <input 
+  	  	        name="frequency"
+  	            id="frequency" 
+  	            type="range" 
+  	            min="40" 
+  	            max="500" 
+  	            value="60" />
+            </div>
+  	      </div>
+
+  	      <div class='param-row'>
+            <div class='param-label'>
+  	  	      <label for="formant-shift">Formant Scale</label>
+            </div>
+            <div class='param-slider'>
+  	          <input 
+  	            name="formant-shift"
+  	  	        id="formant-shift"
+  	  	        type="range"
+  	  	        min="0.5"
+  	  	        max="2"
+  	  	        value="1"
+  	  	        step=0.05 />
+            </div>
+  	      </div>
+
+  	      <div class='param-row'>
+            <div class='param-label'>
+  	          <label for='vibrato-slider'>Vibrato</label>
+            </div>
+            <div class='param-slider'>
+  	          <input 
+  	            type="range" 
+  	            name="vibrato-slider"
+  	            id="vibrato"
+  	            min="0"
+  	            max="1"
+  	            value="0"
+  	            step=0.01 />
+            </div>
+  	      </div>
+
+          <div class='param-row'>
+            <div class='param-label'>
+              <label for='breathiness-slider'>Breathiness</label>
+            </div>
+            <div class='param-slider'>
+              <input 
+                type="range" 
+                name="breathiness-slider"
+                id="breathiness"
+                min="0"
+                max="1"
+                value="0"
+                step=0.01 />
+            </div>
           </div>
-          <div class='param-select'>
-  	        <select name="oscillator" id="oscillator-select">
-  	          <option value="sawtooth">Sawtooth</option>
-  	          <option value="square">Square</option>
-  	          <option value="noise">Noise</option>
-  	        </select>
+
+          <div class='param-row'>
+            <div class='param-label'>
+              <label for='speed-slider'>Speed</label>
+            </div>
+            <div class='param-slider'>
+              <input 
+                type="range"
+                name="speed-slider"
+                id="speed"
+                min="0.5"
+                max="2"
+                value="1"
+                step=0.01 />
+            </div>
+          </div>
+
+          <div class="button-container">
+            <button id="say-button">Say</button>
           </div>
 
   	    </div>
-
-        <div class='param-row'>
-          <div class='param-label'>
-  	        <label for="frequency">Pitch</label>
-          </div>
-          <div class='param-slider'>
-  	        <input 
-  	  	      name="frequency"
-  	          id="frequency" 
-  	          type="range" 
-  	          min="40" 
-  	          max="500" 
-  	          value="60" />
-          </div>
-  	    </div>
-
-  	    <div class='param-row'>
-          <div class='param-label'>
-  	  	    <label for="formant-shift">Formant Scale</label>
-          </div>
-          <div class='param-slider'>
-  	        <input 
-  	          name="formant-shift"
-  	  	      id="formant-shift"
-  	  	      type="range"
-  	  	      min="0.5"
-  	  	      max="2"
-  	  	      value="1"
-  	  	      step=0.05 />
-          </div>
-  	    </div>
-
-  	    <div class='param-row'>
-          <div class='param-label'>
-  	        <label for='vibrato-slider'>Vibrato</label>
-          </div>
-          <div class='param-slider'>
-  	        <input 
-  	          type="range" 
-  	          name="vibrato-slider"
-  	          id="vibrato"
-  	          min="0"
-  	          max="1"
-  	          value="0"
-  	          step=0.01 />
-          </div>
-  	    </div>
-
-        <div class='param-row'>
-          <div class='param-label'>
-            <label for='breathiness-slider'>Breathiness</label>
-          </div>
-          <div class='param-slider'>
-            <input 
-              type="range" 
-              name="breathiness-slider"
-              id="breathiness"
-              min="0"
-              max="1"
-              value="0"
-              step=0.01 />
-          </div>
-        </div>
-
-        <div class='param-row'>
-          <div class='param-label'>
-            <label for='speed-slider'>Speed</label>
-          </div>
-          <div class='param-slider'>
-            <input 
-              type="range"
-              name="speed-slider"
-              id="speed"
-              min="0.5"
-              max="2"
-              value="1"
-              step=0.01 />
-          </div>
-        </div>
-
-        <div>
-          <button id="say-button">Say</button>
-        </div>
-
-  	  </div>
   	  
-  	</div>
+  	  </div>
 
-  	<div class='arpabet-container'>
+  	<!-- <div class='arpabet-container'>
   	  <h2>ARPABET</h2>
   	  <p>ARPABET is a system of representing English phonemes with letters, similar to the International Phonetic Alphabet.
   	  <table>
@@ -147,10 +159,12 @@
   	  	  <td>ER</th>
   	  	  <td>bird</td>
   	  </table>
-<!--   	  <p>AA: <em>car</em><br>AE: <em>bat</em><br>IY: <em>eat</em></p> -->
-  	</div>
+  	</div> -->
+
+    </div>
 
   	<script src="scripts/main.js"></script>
+
   </body>
 
 </html>

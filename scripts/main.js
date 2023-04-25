@@ -3,7 +3,7 @@
 */
 
 // TODO: Clean stuff up. handleNasal and handleSonorant do almost the same thing 
-// Fix popping from stop-consonants
+// 'D' followed by 'B' sounds broken
 
 
 
@@ -567,11 +567,16 @@ class SpeechSynthesizer {
        default to using the formant frequencies of the 'AA' sound */
     const nextPhoneme = PHONEMES[nextPhonemeName];
     if (nextPhoneme?.type === 'vowel') {
-      this.filterBank.setFreqs(nextPhoneme.freqs, time, 0.0);
+      this.filterBank.setFreqs(nextPhoneme.freqs, time, 0.005);  // Slightly above 0 to prevent popping
     } 
     else {
       this.filterBank.setFreqs(PHONEMES['aa'].freqs, time, 0.0);
     }
+
+    // Set the last phoneme to null so that the next sonorant starts normally 
+    // (in case the previous phoneme was a stop-consonant)
+    this.lastPhoneme = null;
+
     // return 0.25 * 1/this.speed;
     return DURATIONS['aspirate'] * 1/this.speed;
   }
@@ -648,7 +653,7 @@ class SpeechSynthesizer {
     if (!this.lastPhoneme) {
       duration = 0.0;
     } 
-    else if (this.lastPhoneme.type == 'fricative') {
+    else if (this.lastPhoneme.type === 'fricative') {
       duration = 0.01; // Slightly above zero to prevent popping caused by changing the filter frequencies abruptly
     }
 
@@ -684,6 +689,8 @@ class SpeechSynthesizer {
   }
 
   handleStopConsonant(phoneme, time) {
+    // Stop consonants have two parts: First the on-glide, which is a vocal-chord sound, followed by a pause.
+    // Then is the actual burst of noise 
     this.handleOnGlide(phoneme, time);
     this.handleNoiseBurst(phoneme, time+0.05);
     // return 0.1 * 1/this.speed;
@@ -691,6 +698,7 @@ class SpeechSynthesizer {
   }
 
   handleOnGlide(phoneme, time) {
+    this.useOscillatorSource(time); // This is necessary even if the previous sound was another stop-consonant
     if (phoneme.voiced) {
       this.filterBank.setFreqs(phoneme.oscFreqs, time, 0.05); // 0.02?
       this.filterBank.soundOff(time+0.05); 
@@ -713,7 +721,7 @@ class SpeechSynthesizer {
   handleOffGlide(phoneme, time) {
   /* Called when a sonorant begins after a stop consonant */
     this.filterBank.soundOff(time);
-    this.filterBank.setFreqs(this.lastPhoneme.oscFreqs, time, 0.0);
+    this.filterBank.setFreqs(this.lastPhoneme.oscFreqs, time, 0.005);  // A little above one to prevent popping 
 
     const startTime = time + this.lastPhoneme.voiceOnsetTime;  // The delay is different depending on the consonant 
 
