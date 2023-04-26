@@ -1,16 +1,15 @@
 /*
-* Parallel Formant Speech Synthesizer 
+* Formant Speech Synthesizer 
 */
 
 // TODO: Clean stuff up. handleNasal and handleSonorant do almost the same thing 
 // 'D' followed by 'B' sounds broken
 
 
-
-// Parameters for synthesizing each phoneme
+/* Parameters for synthesizing each phoneme */
 const PHONEMES = {
   
-  // Vowels --------------------------------------
+// Vowels --------------------------------------
 
   iy: { 
     type  : "vowel", 
@@ -77,7 +76,7 @@ const PHONEMES = {
     freqs : [550,  960, 2400] 
   },
 
-  // Approximants --------------------------------
+// Approximants --------------------------------
 
   w: { 
     type  : "approximant", 
@@ -96,7 +95,7 @@ const PHONEMES = {
     freqs : [310, 1050, 2880] 
   },
 
-  // Nasals --------------------------------------
+// Nasals --------------------------------------
 
   m: { 
     type  : "nasal", 
@@ -111,7 +110,7 @@ const PHONEMES = {
     freqs : [450, 2208, 3079] 
   },
 
-  // Fricatives ----------------------------------
+// Fricatives ----------------------------------
 
   s: { 
     type   : 'fricative', 
@@ -157,7 +156,7 @@ const PHONEMES = {
     muls   : [1.0, 0, 0] 
   },
 
-  // Stop Consonants ----------------------------- 
+// Stop Consonants ----------------------------- 
 
   p: {
     type           : 'stop-consonant', 
@@ -210,8 +209,9 @@ const PHONEMES = {
     voiceOnsetTime : 0.03
   }, 
 
-  // Affricates ----------------------------------
-  // NOTE: Eventually these might have there own type value for distinguishing envelope durations
+// Affricates ----------------------------------
+// NOTE: Eventually these might have their own 'type' value for using envelope durations that are distinct from stop-consonants
+
   ch: { 
     type           : 'stop-consonant', 
     oscFreqs       : [400, 1600, 2600], 
@@ -229,6 +229,7 @@ const PHONEMES = {
   }
 
 };
+
 
 DURATIONS = {
   aspirate       : 0.1,
@@ -262,6 +263,7 @@ class AudioComponent {
 }
 
 
+/* Oscillator with a frequency modulator for vibrato */
 class OscillatorSource extends AudioComponent {
   constructor(context) {
     super(context);
@@ -324,18 +326,7 @@ class OscillatorSource extends AudioComponent {
 }
 
 
-class Carrier extends AudioComponent {
-  constructor(context) {
-    super(context);
-
-    this.context = context; 
-    this.oscillatorSource = new OscillatorSource(this.context);
-    this.noiseSource = new NoiseSource(this.context);
-  }
-  
-}
-
-
+/* White noise generator with an amplitude modulator (for voiced fricatives) and an envelope (for stop-consonants) */
 class NoiseSource extends AudioComponent {
   constructor(context) {
     super(context);
@@ -410,8 +401,51 @@ class NoiseSource extends AudioComponent {
 }
 
 
+/* Combined source that can switch between a noise source and an oscillator source */
+class MainSource extends AudioComponent {
+  constructor(context) {
+    super(context);
 
-// Parallel filter bank with methods for setting filter frequencies, gains, and formant shift ratio
+    this._useNoiseAlways = false; // True when 'Noise' is selected as the waveform. Calls to 'useOscillator()' and 'useNoise()' will be ignored with this flag.
+
+    this._context = context; 
+    this._oscillatorSource = new OscillatorSource(this.context);
+    this._noiseSource = new NoiseSource(this.context);
+  }
+
+  setWaveform(type) {
+    if (type === 'noise') {
+      this._useNoiseAlways = true;
+      this._noiseSource.soundOn(this._context.currentTime);
+    } 
+    else {
+      this._oscillatorSource.setOscillatorType(type);
+      this._useNoiseAlways = false;
+    }
+  }
+
+  useOscillator(time) {
+    if (!this._useNoiseAlways) {
+      this._noiseSource.soundOff(time);
+      this._oscillatorSource.soundOn(time);
+    }
+  }
+
+  useNoise(time) {
+    if (!this._useNoiseAlways) {
+      this._oscillatorSource.soundOff(time);
+      this._noiseSource.soundOn(time);
+    }
+  }
+
+  setFrequency(freq) {
+    this._oscillatorSource.setFrequency(freq);
+    this._noiseSource.setFrequency(freq);
+  }
+}
+
+
+/* Parallel filter bank with methods for setting filter frequencies, gains, and formant scale */
 class FilterBank extends AudioComponent {
   constructor(context) {
     super(context);
@@ -472,6 +506,7 @@ class FilterBank extends AudioComponent {
 }
 
 
+/* Main speech synthesizer with methods to say a string of phonemes and to set the voice characteristics */
 class SpeechSynthesizer {
   constructor(context) {
     this.context = context;

@@ -78,7 +78,8 @@ textarea {
   border: 1px dashed;
   display: flex;
   flex-direction: column;
-  max-width: 50%;
+  /* max-width: 50%; */
+  width: min-content;
 }
 
 .param-row {
