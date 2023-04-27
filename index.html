@@ -14,6 +14,9 @@
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto+Mono'>
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Nunito+Sans'>
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM+Sans">
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
+
   </head>
 
   <body>
@@ -25,14 +28,20 @@
 	  </div>
 	
 	  <div class="about-container">
-  	    <p><strong>Formant synthesis</strong> is a method of audio synthesis that models the spectral characteristics of a sound using resonant filters. Although it can be used as a technique in spectral modeling in general, it's most notable for it's ability to synthesize human speech.</p>
-		<p>This speech synthesizer was made using the <a href="https://webaudioapi.com/samples/">Web Audio API</a>. asdfj some other information about how things work and whatnot can go here I guess hello how are you today</p>
+  	    <p><strong>Formant synthesis</strong> is a method of audio synthesis that models the spectral characteristics of a sound using resonant filters. 
+			Although it can be used to synthesize a number of things, it's particularly notable for it's ability to synthesize human speech.</p>
+		<p>This speech synthesizer was made using the <a href="https://webaudioapi.com/samples/">Web Audio API</a>. 
+			It consists of four parallel bandpass filters and two sound sources&mdash;an oscillator and a white noise generator.</p>
+		
+		<!-- <p>It uses CMU's <a href="http://www.speech.cs.cmu.edu/tools/lextool.html">LexTool</a> for converting English text into pronouncable phonemes.</p> -->
+			
+	    <!-- <p>asdfj some other information about how things work and whatnot can go here I guess hello how are you today</p> -->
 	  </div>
 
       <div class='app-container'>
 
         <div class='textarea-container'>
-  	      <textarea id="text-field" rows="10" cols="50" spellcheck="false">HH EH L OW W ER L D</textarea>
+  	      <textarea id="text-field" rows="10" cols="50" spellcheck="false">hh eh l ow w er l d</textarea>
   	    </div>
 
   	    <div class='parameter-container'>
@@ -40,7 +49,7 @@
           <div class='param-row'>
   	      <!-- <div class='oscillator-container'> -->
             <div class='param-label'>
-  	  	      <label for="oscillator-select">Waveform:</label>
+  	  	      <label for="oscillator-select">Waveform</label>
             </div>
             <div class='param-select'>
   	          <select name="oscillator" id="oscillator-select">
