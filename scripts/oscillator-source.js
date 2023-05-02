@@ -4,6 +4,7 @@
 */
 
 import { AudioComponent } from "./audio-component.js";
+import { NoiseGenerator } from "./noise-generator.js";
 
 
 export class OscillatorSource extends AudioComponent {
@@ -13,6 +14,14 @@ export class OscillatorSource extends AudioComponent {
     this.context = context;
     this.oscillator = null;
     this.oscillatorType = 'sawtooth';
+
+    this.noise = new NoiseGenerator(context);
+    this.noiseGain = new GainNode(context);
+    this.noise.connect(this.noiseGain);
+    this.noiseGain.connect(this.output);
+
+    // this.noiseGain.gain.value = 0.5;
+    // this.breathiness = 0.5;
   
     this.modOscillator = null;
     this.modGain = new GainNode(context);
@@ -38,6 +47,10 @@ export class OscillatorSource extends AudioComponent {
   setFrequency(freq) {
     this.oscillator.frequency.setValueAtTime(freq, this.context.currentTime);
   }
+
+  setBreathiness(value) {
+    this.noiseGain.gain.setValueAtTime(value, this.context.currentTime);
+  }
   
   setOscillatorType(type) {
     this.oscillatorType = type;
@@ -45,9 +58,12 @@ export class OscillatorSource extends AudioComponent {
       this.oscillator.type = type;
     }
   }
-  
-  setModRate(freq) {
-  
+
+  setWaveform(type) {
+    this.oscillatorType = type;
+    if (this.oscillator) {
+      this.oscillator.type = type;
+    }
   }
   
   setModAmount(value) {
@@ -60,9 +76,18 @@ export class OscillatorSource extends AudioComponent {
     this.createFrequencyMod();
     this.oscillator.start(time);
     this.modOscillator.start(time);
+    this.noise.start(time);
   }
   
   stop(time) {
     this.oscillator.stop(time);
+    this.noise.stop(time);
+  }
+
+  cancel() {
+    super.cancel();
+    if (this.oscillator) {
+      this.stop(this.context.currentTime);
+    }
   }
 }

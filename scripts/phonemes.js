@@ -214,7 +214,7 @@ export const PHONEMES = {
     noiseGains     : [0.65, 0.69, 0.59, 0],    // added zero but weird
     voiceOnsetTime : 0.03
     },
-    j: {
+    jh: {
     type           : 'stop-consonant', 
     Voiced         : true,
     oscFreqs       : [200, 1600, 2600], 
@@ -228,13 +228,13 @@ export const PHONEMES = {
 
 export const DURATIONS = {
     aspirate       : 0.1,
-    pause          : 0.1,
+    pause          : 0.25,
   
     vowel          : 0.2,
     approximant    : 0.1,
     nasal          : 0.1,
     fricative      : 0.1,
-    stopConsonant  : 0.08
+    'stop-consonant'  : 0.08
 };
   
     

@@ -20,4 +20,8 @@ export class AudioComponent {
   soundOff(time) {
     this.output.gain.setValueAtTime(0.001, time);
   }
+
+  cancel() {
+    this.output.gain.cancelScheduledValues(this.context.currentTime);
+  }
 }

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM+Sans">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body, textarea {
+      background: #FEFFFE;
+    }
+    
+    body, select {
+      font-family: 'DM Sans', Calibri;
+      color: #210124;
+    }
+
+    .container {
+      width: 60%;
+      margin: auto;
+      
+    }
+    
+    h1 {
+      text-align: center;
+    }
+    
+    .app-container {
+      display: flex;
+    }
+    
+    .text-container {
+      flex-grow: 1;
+    }
+    
+    textarea {
+      resize: none;
+      border: none;
+      width: 100%;
+      height: 100%;
+      font-family: 'Source Code Pro';
+    }
+    
+    .param-container {
+      display: flex;
+      flex-direction: column;
+      background: #d4ebe44c;
+      padding: 2rem;
+      height: 24rem;
+    }
+    
+    select {
+      border: none;
+      background: none;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+      color: #40524c;
+    }
+    
+    select:hover {
+      background-color: #e0ebe89e;
+    }
+    
+    button {
+      width: 4rem;
+      height: 1.3rem;
+      margin: auto;
+      margin-top: 1.5rem;
+    }
+    
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Formant Speech Synthesis</h1>
+    <p>Formant synthesis is a method of audio synthesis that models the spectral characteristics of a sound using resonant filters. Although it can be used to synthesize a number of things, it's particularly notable for it's ability to synthesize human speech.</p>
+    <p>This speech synthesizer was made using the Web Audio API. It consists of four parallel bandpass filters and two sound sources—an oscillator and a white noise generator.</p>
+    
+    <div class="app-container">
+      <div class="text-container">
+        <textarea></textarea>
+      </div>
+      <div class="param-container">
+        <label>Waveform</label>
+        <select>
+          <option>Sawtooth</option>
+          <option>Square</option>
+          <option>Noise</option>
+        </select>
+        <label>Pitch</label>
+        <input type="range"/>
+        <label>Formant Scale</label>
+        <input type="range"/>
+        <label>Vibrato</label>
+        <input type="range"/>
+        <label>Breathiness</label>
+        <input type="range"/>
+        <label>Speed</label>
+        <input type="range"/>
+
+        <button>Say</button>
+
+       
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

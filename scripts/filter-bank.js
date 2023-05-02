@@ -62,4 +62,14 @@ export class FilterBank extends AudioComponent {
       input.connect(filter);
     }
   }
+
+  cancel() {
+    super.cancel();
+    if (this.filters) {
+      for (let filt of this.filters) {
+        filt.frequency.cancelScheduledValues(this.context.currentTime);
+        filt.gain.cancelScheduledValues(this.context.currentTime);
+      }
+    }
+  }
 }

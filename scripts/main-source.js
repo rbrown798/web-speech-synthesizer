@@ -7,7 +7,7 @@ import { OscillatorSource } from "./oscillator-source.js";
 import { NoiseSource } from "./noise-source.js";
 
 
-class MainSource extends AudioComponent {
+export class MainSource extends AudioComponent {
   constructor(context) {
     super(context);
   

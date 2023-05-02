@@ -4,6 +4,7 @@
 */
 
 import { AudioComponent } from "./audio-component.js";
+import { NoiseGenerator } from "./noise-generator.js";
 
 
 export class NoiseSource extends AudioComponent {
@@ -11,35 +12,15 @@ export class NoiseSource extends AudioComponent {
     super(context);
   
     this.context = context;
-    this.noiseBuffer = null;
-    this.noise = null;
+    this.noise = new NoiseGenerator(context);
   
     this.noiseGain = new GainNode(context);     // 'noiseGain' will be used both as an envelope and an amplitude modulator 
     this.modGain = new GainNode(context);
     this.amplitudeMod = null;
   
+    this.noise.connect(this.noiseGain);
     this.noiseGain.connect(this.output);
     this.modGain.connect(this.noiseGain.gain);
-  }
-  
-  createNoiseBuffer() {
-    // Create an empty 1-second buffer
-    const bufferSize = this.context.sampleRate;
-    const noiseBuffer = new AudioBuffer({length: bufferSize, sampleRate: this.context.sampleRate});
-    // Fill the buffer with noise 
-    const data = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = Math.random() * 2 - 1;
-    }
-    this.noiseBuffer = noiseBuffer;
-  }
-  
-  createNoise() {
-    this.createNoiseBuffer();
-    this.noise = new AudioBufferSourceNode(this.context);
-    this.noise.buffer = this.noiseBuffer;
-    this.noise.loop = true;
-    this.noise.connect(this.noiseGain);
   }
   
   createAmplitudeMod() {
@@ -48,7 +29,6 @@ export class NoiseSource extends AudioComponent {
   }
   
   start(time) {
-    this.createNoise();
     this.createAmplitudeMod();
     this.noise.start(time);
     this.amplitudeMod.start(time);
@@ -76,5 +56,13 @@ export class NoiseSource extends AudioComponent {
     this.noiseGain.gain.setTargetAtTime(0.0, time, 0.02);
     // Reset value 
     this.noiseGain.gain.setValueAtTime(1.0, time+0.02);
+  }
+
+  cancel() {
+    super.cancel();
+    this.modGain.gain.cancelScheduledValues(this.context.currentTime);
+    if (this.noise) {
+      this.noise.stop(this.context.currentTime);
+    }
   }
 }
