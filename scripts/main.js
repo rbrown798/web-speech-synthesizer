@@ -12,20 +12,37 @@ import { SpeechSynthesizer } from "./speech-synth.js";
 
 import { cmudict } from "./cmudict.js";
 
+
+
 // convert text to arpabet using the cmudict
 const toPhonemes = inputString => {
   let phonemeStr = '';
   for (let word of inputString.split(' ')) {
+    // Look up the word in the cmudict
     const phonemes = cmudict[word.toUpperCase()];
-    const trimmedPhonemes = [];
-    for (let p of phonemes) {
-      const trimmed = p.replace(/\d+$/, '');  // trim stress number
-      trimmedPhonemes.push(trimmed);
+
+    // If it's in the dictionary, add the phonemes to the new string
+    if (phonemes) {
+      const trimmedPhonemes = [];
+      for (let p of phonemes) {
+        const trimmed = p.replace(/\d+$/, '');  // trim stress number
+        trimmedPhonemes.push(trimmed);
+      }
+      phonemeStr += trimmedPhonemes.join(' ') + ' ';
     }
-    phonemeStr += trimmedPhonemes.join(' ') + ' ';
   }
   return phonemeStr;
 };
+
+// Split sentences and translate each one into phonemes
+const sentencesToPhonemes = inputString => {
+  const sentences = inputString.split('.');
+  let translated = [];
+  for (let sentence of sentences) {
+    translated.push(toPhonemes(sentence.trim()));
+  }
+  return translated.join(' . ');
+}
 
 // console.log(toPhonemes('hello there friends i am here'));
 
@@ -69,10 +86,10 @@ playButton.addEventListener('click', () => {
   // speechSynth.say(phonemeString);
 
   const inputString = inputField.value.trim();
-  speechSynth.say(toPhonemes(inputString).toLowerCase());
+  speechSynth.say(sentencesToPhonemes(inputString).toLowerCase());
 
   speechSynth.setFrequency(frequencySlider.value);
-  speechSynth.setFormantScale(formantShiftSlider.value);
+  // speechSynth.setFormantScale(formantShiftSlider.value);
   speechSynth.setWaveform(oscillatorSelect.value); 
   speechSynth.setBreathiness(breathinessSlider.value);
 });

@@ -91,7 +91,7 @@ export class SpeechSynthesizer {
     }
     // Stop audio
     this.stop();
-
+    this.lastPhoneme = null;  // So that when it restarts it doesn't slide from the last sound
   }
 
   // handlePitchCurve(phonemeNames, index, inputString) {
@@ -139,10 +139,10 @@ export class SpeechSynthesizer {
   handlePause() {
     this.filterBank.soundOff(this.time);
     // this.filterBank.soundOn(this.time+0.5);  // maybe change this
-    this.filterBank.soundOn(this.time + DURATIONS['pause']);  // maybe change this
     this.lastPhoneme = null;
 
     this.time += DURATIONS['pause'] * (1 / this.speed);
+    this.filterBank.soundOn(this.time); // Unpause after the delay
   }
 
   handleAspirate(nextPhonemeName) {            // make nextPhonemeName=null by default
@@ -167,6 +167,7 @@ export class SpeechSynthesizer {
   }
 
   handlePhoneme(phonemeName) {
+    console.log('in handlePhoneme()');
     const phoneme = PHONEMES[phonemeName];
 
     switch (phoneme.type) {
@@ -189,6 +190,7 @@ export class SpeechSynthesizer {
         break;
     }
     this.lastPhoneme = phoneme;
+    console.log('phoneme duration:', DURATIONS[phoneme.type]);
     this.time += DURATIONS[phoneme.type] * (1 / this.speed);
   }
 
@@ -219,6 +221,7 @@ export class SpeechSynthesizer {
   } 
 
   handleSonorant(phoneme, duration=0.05) { 
+    console.log('in handleSonorant()');
     // If the last phoneme was also a sonorant, transition smoothly. 
     // If there was no last phoneme (ie. if this is the beginning of a word), 
     // or if the last phoneme was a fricative, transition abruptly  
@@ -229,7 +232,12 @@ export class SpeechSynthesizer {
       duration = 0.01; // Slightly above zero to prevent popping caused by changing the filter frequencies abruptly
     }
 
+    console.log('inhandlssonorant time', this.time);
+    console.log('duration', duration);
+
     this.useOscillatorSource();
+
+    console.log('TIME handleSonorant', this.time);
 
     // Set the filter parameters
     this.filterBank.setFreqs(phoneme.freqs, this.time, duration);
