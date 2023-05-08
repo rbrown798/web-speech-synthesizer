@@ -37,12 +37,7 @@ export class FilterBank extends AudioComponent {
     this.filterGains = filterGains;
   }
   
-  setFreqs(freqs, time, duration=0.5) {
-    console.log('setting freqs');
-    console.log('duration in setFreqs', duration);
-    console.log('time in set freqs', time);
-    console.log('freqs:', freqs);
-    
+  setFreqs(freqs, time, duration=0.5) {    
     for (let i = 0; i < freqs.length; i++) {
       this.filters[i].frequency.setTargetAtTime(freqs[i]*this.formantScale, time, duration);
     }  

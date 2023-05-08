@@ -13,9 +13,29 @@ import { SpeechSynthesizer } from "./speech-synth.js";
 import { cmudict } from "./cmudict.js";
 
 
+// Translate from cmu version to our version
+const convertDiphthongs = phonemeString => {
+
+  const conversions = {
+    'AY': 'AY Y',
+    'AW': 'AW W',
+    'EY': 'EY Y',
+    'OW': 'OW W',
+    'OY': 'OY Y'
+  }
+
+  for (let [diphthong, conversion] of Object.entries(conversions)) {
+    phonemeString = phonemeString.replace(diphthong, conversion);
+  }
+
+  console.log(phonemeString);
+
+  return phonemeString;
+}
 
 // convert text to arpabet using the cmudict
 const toPhonemes = inputString => {
+  inputString = inputString.replace('\n', ' '); // Treat new lines like spaces
   let phonemeStr = '';
   for (let word of inputString.split(' ')) {
     // Look up the word in the cmudict
@@ -27,11 +47,12 @@ const toPhonemes = inputString => {
       for (let p of phonemes) {
         const trimmed = p.replace(/\d+$/, '');  // trim stress number
         trimmedPhonemes.push(trimmed);
+        // trimmedPhonemes.push(p);
       }
       phonemeStr += trimmedPhonemes.join(' ') + ' ';
     }
   }
-  return phonemeStr;
+  return convertDiphthongs(phonemeStr);
 };
 
 // Split sentences and translate each one into phonemes

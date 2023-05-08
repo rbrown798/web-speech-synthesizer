@@ -12,9 +12,11 @@ export class OscillatorSource extends AudioComponent {
     super(context);
   
     this.context = context;
-    this.oscillator = null;
-    this.oscillatorType = 'sawtooth';
 
+    this.oscillator = null;
+    this.oscillatorGain = new GainNode(context);
+    this.oscillatorGain.connect(this.output);
+    
     this.noise = new NoiseGenerator(context);
     this.noiseGain = new GainNode(context);
     this.noise.connect(this.noiseGain);
@@ -28,12 +30,16 @@ export class OscillatorSource extends AudioComponent {
   
     this.modAmount = 0;
     this.modRate = 7;
+
+    this.waveform = 'sawtooth';
+
+    this.breathiness = 0;
   }
   
   createOscillator() {
     this.oscillator = new OscillatorNode(this.context);
-    this.oscillator.type = this.oscillatorType;
-    this.oscillator.connect(this.output);
+    this.oscillator.type = this.waveform;
+    this.oscillator.connect(this.oscillatorGain);
   }
   
   createFrequencyMod() {
@@ -49,20 +55,29 @@ export class OscillatorSource extends AudioComponent {
   }
 
   setBreathiness(value) {
-    this.noiseGain.gain.setValueAtTime(value, this.context.currentTime);
+    this.breathiness = value;
+    if (this.waveform !== "noise") {
+      this.noiseGain.gain.setValueAtTime(value, this.context.currentTime);
+    }
   }
   
   setOscillatorType(type) {
-    this.oscillatorType = type;
+    this.waveform = type;
     if (this.oscillator) {
       this.oscillator.type = type;
     }
   }
 
   setWaveform(type) {
-    this.oscillatorType = type;
-    if (this.oscillator) {
+    this.waveform = type;
+    if (type === 'noise') { // Only use the noise generator
+      this.oscillatorGain.gain.setValueAtTime(0.001, this.context.currentTime);
+      this.noiseGain.gain.setValueAtTime(1, this.context.currentTime);
+    }
+    else if (this.oscillator) { // Use both
       this.oscillator.type = type;
+      this.oscillatorGain.gain.setValueAtTime(1, this.context.currentTime);
+      this.noiseGain.gain.setValueAtTime(this.breathiness, this.context.currentTime);
     }
   }
   

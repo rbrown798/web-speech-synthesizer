@@ -1,190 +1,54 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html>
 
-<!-- speechgadget.io -->
+<head>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM+Sans">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
 
-  <head>
-  	<meta charset="utf-8" />
-  	<meta name="viewport" content="width=device-width" />
-  	<title>Speech Synthesizer</title>
-  	<link href="./styles/style.css" rel="stylesheet">
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Poppins'>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Open+Sans'>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Work+Sans'>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto+Mono'>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Nunito+Sans'>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=DM+Sans">
-	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
+  <link href="./styles/style.css" rel="stylesheet">
 
-  </head>
+</head>
 
-  <body>
+<body>
 
-    <div class='content'>
+  <div class="container">
+    <h1>Formant Speech Synthesis</h1>
+    <p><strong>Formant synthesis</strong> is a method of audio synthesis that models the spectral characteristics of a sound using resonant filters. Although it can be used to synthesize a number of things, it's particularly notable for it's ability to synthesize human speech.</p>
+    <p>This speech synthesizer was made using the <a href="https://webaudioapi.com/samples/">Web Audio API</a>. It consists of four parallel bandpass filters and two sound sources—an oscillator and a white noise generator.</p>
+    
+    <div class="app-container">
 
-	  <!-- <div class="nav-bar">
-	    <ul>
-	      <li><a>Home</a></li>
-	      <li><a>Gadgets</a></li>
-	      <li><a>Music</a></li>
-	      <li><a>Contact</a></li>
-	      <li><a>About</a></li>
-	    </ul>
-	  </div> -->
+      <div class="text-container">
+        <textarea id="text-field" spellcheck="false">hello world</textarea>
+      </div>
 
-	  <div class="about-container">
-		<h1>Formant Speech Synthesis</h1>
-	  </div>
-	
-	  <div class="about-container">
-  	    <p><strong>Formant synthesis</strong> is a method of audio synthesis that models the spectral characteristics of a sound using resonant filters. 
-			Although it can be used to synthesize a number of things, it's particularly notable for it's ability to synthesize human speech.</p>
-		<p>This speech synthesizer was made using the <a href="https://webaudioapi.com/samples/">Web Audio API</a>. 
-			It consists of four parallel bandpass filters and two sound sources&mdash;an oscillator and a white noise generator.</p>
-		
-		<!-- <p>It uses CMU's <a href="http://www.speech.cs.cmu.edu/tools/lextool.html">LexTool</a> for converting English text into pronouncable phonemes.</p> -->
-			
-	    <!-- <p>asdfj some other information about how things work and whatnot can go here I guess hello how are you today</p> -->
-	  </div>
+      <div class="param-container">
+        <label>Waveform</label>
+        <select id="oscillator-select">
+          <option value="sawtooth">Sawtooth</option>
+          <option value="square">Square</option>
+          <option value="noise">Noise</option>
+        </select>
+        <label>Pitch</label>
+        <input type="range" id="frequency" min="40" max="500" value="48"/>
+        <label>Formant Scale</label>
+        <input type="range" id="formant-shift" min="0.5" max="2" value="0.8" step="0.05"/>
+        <label>Vibrato</label>
+        <input type="range" id="vibrato" min="0" max="1" value="0" step="0.01"/>
+        <label>Breathiness</label>
+        <input type="range" id="breathiness" min="0" max="1" value="0.2" step="0.01"/>
+        <label>Speed</label>
+        <input type="range" id="speed" min="0.5" max="2" value="1" step="0.01"/>
 
-      <div class='app-container'>
+        <button id="say-button">Say</button>
 
-        <div class='textarea-container'>
-  	      <textarea id="text-field" rows="10" cols="50" spellcheck="false">hello world</textarea>
-  	    </div>
-
-  	    <div class='parameter-container'>
-
-          <div class='param-row'>
-  	      <!-- <div class='oscillator-container'> -->
-            <div class='param-label'>
-  	  	      <label for="oscillator-select">Waveform</label>
-            </div>
-            <div class='param-select'>
-  	          <select name="oscillator" id="oscillator-select">
-  	            <option value="sawtooth">Sawtooth</option>
-  	            <option value="square">Square</option>
-  	            <option value="noise">Noise</option>
-  	          </select>
-            </div>
-
-  	      </div>
-
-          <div class='param-row'>
-            <div class='param-label'>
-  	          <label for="frequency">Pitch</label>
-            </div>
-            <div class='param-slider'>
-  	          <input 
-  	  	        name="frequency"
-  	            id="frequency" 
-  	            type="range" 
-  	            min="40" 
-  	            max="500" 
-  	            value="48" /> <!--value="60"-->
-            </div>
-  	      </div>
-
-  	      <div class='param-row'>
-            <div class='param-label'>
-  	  	      <label for="formant-shift">Formant Scale</label>
-            </div>
-            <div class='param-slider'>
-  	          <input 
-  	            name="formant-shift"
-  	  	        id="formant-shift"
-  	  	        type="range"
-  	  	        min="0.5"
-  	  	        max="2"
-  	  	        value="0.8"  
-  	  	        step=0.05 />	<!--value="1"-->
-            </div>
-  	      </div>
-
-  	      <div class='param-row'>
-            <div class='param-label'>
-  	          <label for='vibrato-slider'>Vibrato</label>
-            </div>
-            <div class='param-slider'>
-  	          <input 
-  	            type="range" 
-  	            name="vibrato-slider"
-  	            id="vibrato"
-  	            min="0"
-  	            max="1"
-  	            value="0"
-  	            step=0.01 />
-            </div>
-  	      </div>
-
-          <div class='param-row'>
-            <div class='param-label'>
-              <label for='breathiness-slider'>Breathiness</label>
-            </div>
-            <div class='param-slider'>
-              <input 
-                type="range" 
-                name="breathiness-slider"
-                id="breathiness"
-                min="0"
-                max="1"
-                value="0.21"
-                step=0.01 />
-            </div>
-          </div>
-
-          <div class='param-row'>
-            <div class='param-label'>
-              <label for='speed-slider'>Speed</label>
-            </div>
-            <div class='param-slider'>
-              <input 
-                type="range"
-                name="speed-slider"
-                id="speed"
-                min="0.5"
-                max="2"
-                value="1"
-                step=0.01 />
-            </div>
-          </div>
-
-          <div class="button-container">
-            <button id="say-button">Say</button>
-          </div>
-
-  	    </div>
-  	  
-  	  </div>
-
-  	<!-- <div class='arpabet-container'>
-  	  <h2>ARPABET</h2>
-  	  <p>ARPABET is a system of representing English phonemes with letters, similar to the International Phonetic Alphabet.
-  	  <table>
-  	  	<tr>
-  	  	  <th>Phoneme</th>
-  	  	  <th>Example</th>
-  	  	</tr>
-  	  	<tr>
-  	  	  <td>AA</td>
-  	  	  <td>car</td>
-  	  	</tr>
-  	  	<tr>
-  	  	  <td>AE</td>
-  	  	  <td>bat</td>
-  	  	</tr>
-  	  	<tr>
-  	  	  <td>ER</th>
-  	  	  <td>bird</td>
-  	  </table>
-  	</div> -->
-
+       
+      </div>
     </div>
+  </div>
 
-	<!-- <script type="module" src="scripts/audio-component.js"></script> -->
-  	<script type="module" src="scripts/main.js"></script>
+  <script type="module" src="scripts/main.js"></script>
 
-  </body>
-
+</body>
 </html>

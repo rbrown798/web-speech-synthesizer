@@ -166,8 +166,19 @@ export class SpeechSynthesizer {
     this.time += DURATIONS['aspirate'] * (1 / this.speed);
   }
 
+  setStress(stress) {
+
+  }
+
   handlePhoneme(phonemeName) {
-    console.log('in handlePhoneme()');
+
+    // // If the phoneme name ends in a stress number, set the pitch
+    // console.log('name', phonemeName.slice(-1));
+    // if (!isNaN(phonemeName.slice(-1))) {
+    //   this.setStress(phonemeName.slice(-1));
+    //   phonemeName = phonemeName.slice(0, -1); // Remove the stress number
+    // }
+
     const phoneme = PHONEMES[phonemeName];
 
     switch (phoneme.type) {
@@ -190,7 +201,6 @@ export class SpeechSynthesizer {
         break;
     }
     this.lastPhoneme = phoneme;
-    console.log('phoneme duration:', DURATIONS[phoneme.type]);
     this.time += DURATIONS[phoneme.type] * (1 / this.speed);
   }
 
@@ -221,7 +231,6 @@ export class SpeechSynthesizer {
   } 
 
   handleSonorant(phoneme, duration=0.05) { 
-    console.log('in handleSonorant()');
     // If the last phoneme was also a sonorant, transition smoothly. 
     // If there was no last phoneme (ie. if this is the beginning of a word), 
     // or if the last phoneme was a fricative, transition abruptly  
@@ -232,12 +241,7 @@ export class SpeechSynthesizer {
       duration = 0.01; // Slightly above zero to prevent popping caused by changing the filter frequencies abruptly
     }
 
-    console.log('inhandlssonorant time', this.time);
-    console.log('duration', duration);
-
     this.useOscillatorSource();
-
-    console.log('TIME handleSonorant', this.time);
 
     // Set the filter parameters
     this.filterBank.setFreqs(phoneme.freqs, this.time, duration);
