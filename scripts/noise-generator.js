@@ -1,3 +1,8 @@
+/*
+*   noise-generator.js
+*   Simple white noise generator with start() and stop() methods
+*/
+
 import { AudioComponent } from "./audio-component.js";
 
 export class NoiseGenerator extends AudioComponent {

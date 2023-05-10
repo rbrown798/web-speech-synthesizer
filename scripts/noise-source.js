@@ -1,6 +1,7 @@
 /*
 *   noise-source.js
 *   White noise generator with an amplitude modulator (for voiced fricatives) and an envelope (for stop-consonants) 
+*   Also used for aspirate phoneme 
 */
 
 import { AudioComponent } from "./audio-component.js";
