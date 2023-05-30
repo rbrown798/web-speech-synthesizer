@@ -62,11 +62,11 @@ export class Oscillator extends AudioComponent {
     this.oscillator.stop(time);
   }
 
-//   cancel() {
-//     super.cancel();
-//     if (this.oscillator) {
-//       this.stop(this.context.currentTime);
-//     }
-//   }
+  cancel() {
+    super.cancel();
+    if (this.oscillator) {
+      this.stop(this.context.currentTime);
+    }
+  }
 
 }

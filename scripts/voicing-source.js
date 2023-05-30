@@ -8,7 +8,7 @@ import { Oscillator } from "./oscillator.js";
 import { NoiseGenerator } from "./noise-generator.js";
 
 
-export class OscillatorSource extends AudioComponent {
+export class VoicingSource extends AudioComponent {
   constructor(context) {
     super(context);
   
@@ -66,10 +66,9 @@ export class OscillatorSource extends AudioComponent {
     this.noise.stop(time);
   }
 
-  // cancel() {
-  //   super.cancel();
-  //   if (this.oscillator) {
-  //     this.stop(this.context.currentTime);
-  //   }
-  // }
+  cancel() {
+    super.cancel();
+    this.oscillator.cancel();
+    this.noise.cancel();
+  }
 }

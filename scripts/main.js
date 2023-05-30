@@ -35,7 +35,7 @@ const convertDiphthongs = phonemeString => {
 
 // convert text to arpabet using the cmudict
 const toPhonemes = inputString => {
-  inputString = inputString.replace('\n', ' '); // Treat new lines like spaces
+  inputString = inputString.replaceAll('\n', ' '); // Treat new lines like spaces
   let phonemeStr = '';
   for (let word of inputString.split(' ')) {
     // Look up the word in the cmudict
@@ -57,6 +57,7 @@ const toPhonemes = inputString => {
 
 // Split sentences and translate each one into phonemes
 const sentencesToPhonemes = inputString => {
+  inputString = inputString.replaceAll(',', '.').replaceAll('?', '.').replaceAll('-', ' ').replaceAll(':', ' ');
   const sentences = inputString.split('.');
   let translated = [];
   for (let sentence of sentences) {
@@ -95,6 +96,11 @@ vibratoSlider.addEventListener('input', () => {
 const breathinessSlider = document.querySelector('#breathiness');
 breathinessSlider.addEventListener('input', () => {
   speechSynth.setBreathiness(breathinessSlider.value);
+});
+
+const speedSlider = document.querySelector('#speed');
+speedSlider.addEventListener('input', () => {
+  speechSynth.setSpeed(speedSlider.value);
 });
 
 const inputField = document.querySelector('#text-field');

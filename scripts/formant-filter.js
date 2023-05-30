@@ -36,4 +36,9 @@ export class FormantFilter extends AudioComponent {
   setFormantScale(value) {
     this.formantScale.setValue(value);
   }
+
+  cancel() {
+    super.cancel();
+    this.baseFreqGain.gain.cancelScheduledValues(this.context.currentTime);
+  }
 }

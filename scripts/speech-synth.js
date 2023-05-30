@@ -5,21 +5,21 @@
 
 import { PHONEMES } from "./phonemes.js";
 import { DURATIONS } from "./phonemes.js";
-import { OscillatorSource } from "./oscillator-source.js";
-import { NoiseSource } from "./noise-source.js";
+import { VoicingSource } from "./voicing-source.js";
+import { BreathSource } from "./breath-source.js";
 import { FilterBank } from "./filter-bank.js";
 
 
 export class SpeechSynthesizer {
   constructor(context) {
     this.context = context;
-    this.oscillatorSource = new OscillatorSource(context);
-    this.noiseSource = new NoiseSource(context);
+    this.voicingSource = new VoicingSource(context);
+    this.breathSource = new BreathSource(context);
     this.filterBank = new FilterBank(context);
     this.primaryGain = new GainNode(context);
     
-    this.filterBank.addInput(this.oscillatorSource);
-    this.filterBank.addInput(this.noiseSource);
+    this.filterBank.addInput(this.voicingSource);
+    this.filterBank.addInput(this.breathSource);
     this.filterBank.connect(this.primaryGain);
     this.primaryGain.connect(this.context.destination);
 
@@ -28,9 +28,13 @@ export class SpeechSynthesizer {
     this.time = 0;
   }
 
+  setSpeed(speed) {
+    this.speed = speed;
+  }
+
   setFrequency(freq) {
-    this.oscillatorSource.setFrequency(freq);
-    this.noiseSource.setFrequency(freq);
+    this.voicingSource.setFrequency(freq);
+    this.breathSource.setFrequency(freq);
   }
 
   setFormantScale(value) {
@@ -38,35 +42,37 @@ export class SpeechSynthesizer {
   }
 
   setWaveform(type) {
-    this.oscillatorSource.setWaveform(type);
+    this.voicingSource.setWaveform(type);
   }
 
   setVibratoAmount(value) {
-    this.oscillatorSource.setModAmount(value);
+    this.voicingSource.setModAmount(value);
   }
 
   setBreathiness(value) {
-    this.oscillatorSource.setBreathiness(value);
+    this.voicingSource.setBreathiness(value);
   }
 
   start() {
     // this.cancel();
-    this.oscillatorSource.start(this.time);
-    this.noiseSource.start(this.time);
+    this.voicingSource.start(this.time);
+    this.breathSource.start(this.time);
   }
 
   stop() {
-    this.oscillatorSource.stop(this.time);
-    this.noiseSource.stop(this.time);
+    this.voicingSource.stop(this.time);
+    this.breathSource.stop(this.time);
   }
 
   cancel() {
-    this.oscillatorSource.cancel();
-    this.noiseSource.cancel();
+    this.voicingSource.cancel();
+    this.breathSource.cancel();
     this.filterBank.cancel();
   }
 
   say(inputString) {
+    this.cancel();
+
     this.time = this.context.currentTime;
     // Start audio
     this.start();
@@ -116,20 +122,20 @@ export class SpeechSynthesizer {
 
   //   if (phonemeName === '.' || !this.lastPhoneme) {
   //     this.stopped = true;
-  //     this.oscillatorSource.oscillator.frequency.setValueAtTime(60, this.time);
+  //     this.voicingSource.oscillator.frequency.setValueAtTime(60, this.time);
   //   }
   //   else if (phonemeName !== 'hh' && this.stopped) {
-  //     this.oscillatorSource.oscillator.frequency.setValueAtTime(60, this.time);
+  //     this.voicingSource.oscillator.frequency.setValueAtTime(60, this.time);
   //     this.stopped = false;
   //   }
   //   else if (nextPhonemeName === '.') {
   //     console.log("YES")
-  //     this.oscillatorSource.oscillator.frequency.setValueAtTime(60, this.time);
+  //     this.voicingSource.oscillator.frequency.setValueAtTime(60, this.time);
   //     this.stopped = true;
   //   }
 
   //   else if (phonemeName !== 'hh') {
-  //     this.oscillatorSource.oscillator.frequency.setValueAtTime(70, this.time);
+  //     this.voicingSource.oscillator.frequency.setValueAtTime(70, this.time);
   //   }
 
   //   // sentences (separated by '.') --> syllables (separated by consonants) --> phonemes (separated by spaces);
@@ -146,8 +152,8 @@ export class SpeechSynthesizer {
   }
 
   handleAspirate(nextPhonemeName) {            // make nextPhonemeName=null by default
-    this.useNoiseSource();
-    this.noiseSource.amplitudeModOff(this.time);
+    this.usebreathSource();
+    this.breathSource.amplitudeModOff(this.time);
     
     /* The 'HH' sound is an aspirated of the next phoneme. If the next phoneme isn't a vowel, or doesn't exist, 
        default to using the formant frequencies of the 'AA' sound */
@@ -223,7 +229,7 @@ export class SpeechSynthesizer {
       duration = 0.0;
     }
 
-    this.useOscillatorSource();
+    this.usevoicingSource();
     
     // Use 4th formant filter, set at 270 for nasal cavity resonance 
     this.filterBank.setFreqs([...phoneme.freqs, 270], this.time, duration);
@@ -241,7 +247,7 @@ export class SpeechSynthesizer {
       duration = 0.01; // Slightly above zero to prevent popping caused by changing the filter frequencies abruptly
     }
 
-    this.useOscillatorSource();
+    this.usevoicingSource();
 
     // Set the filter parameters
     this.filterBank.setFreqs(phoneme.freqs, this.time, duration);
@@ -251,13 +257,13 @@ export class SpeechSynthesizer {
   handleFricative(phoneme) {
     // Voiced fricatives are synthesized with amplitude-modulated noise 
     if (phoneme.voiced) {
-      this.noiseSource.amplitudeModOn(this.time);
+      this.breathSource.amplitudeModOn(this.time);
     } 
     else {
-      this.noiseSource.amplitudeModOff(this.time);
+      this.breathSource.amplitudeModOff(this.time);
     }
 
-    this.useNoiseSource();
+    this.usebreathSource();
     this.filterBank.setFreqs(phoneme.freqs, this.time, 0.0);
     this.filterBank.setGains([1, 0, 0, 0], this.time, 0.0);
   }
@@ -270,7 +276,7 @@ export class SpeechSynthesizer {
   }
 
   handleOnGlide(phoneme) {
-    this.useOscillatorSource(); // This is necessary even if the previous sound was another stop-consonant
+    this.usevoicingSource(); // This is necessary even if the previous sound was another stop-consonant
     if (phoneme.voiced) {
       this.filterBank.setFreqs(phoneme.oscFreqs, this.time, 0.05); // 0.02?
       this.filterBank.soundOff(this.time+0.05); 
@@ -283,12 +289,12 @@ export class SpeechSynthesizer {
   }
 
   handleNoiseBurst(phoneme) {
-    this.useNoiseSource();
+    this.usebreathSource();
     this.filterBank.setFreqs(phoneme.noiseFreqs, this.time, 0.0);
     this.filterBank.setGains(phoneme.noiseGains, this.time, 0.0);
     this.filterBank.soundOn(this.time);
-    this.noiseSource.amplitudeModOff(this.time);
-    this.noiseSource.playEnvelope(this.time);
+    this.breathSource.amplitudeModOff(this.time);
+    this.breathSource.playEnvelope(this.time);
   }
 
   handleOffGlide(phoneme) {
@@ -310,14 +316,14 @@ export class SpeechSynthesizer {
     }
   }  
 
-  useOscillatorSource() {
-    this.oscillatorSource.soundOn(this.time);
-    this.noiseSource.soundOff(this.time);
+  usevoicingSource() {
+    this.voicingSource.soundOn(this.time);
+    this.breathSource.soundOff(this.time);
   }
 
-  useNoiseSource() {
-    this.noiseSource.soundOn(this.time);
-    this.oscillatorSource.soundOff(this.time);
+  usebreathSource() {
+    this.breathSource.soundOn(this.time);
+    this.voicingSource.soundOff(this.time);
   }
 }
 
@@ -329,22 +335,22 @@ export class SpeechSynthesizer {
 // export class SpeechSynthesizer {
 //   constructor(context) {
 //     this._context = context;
-//     this._oscillatorSource = new OscillatorSource(context);  // voicingSource
-//     this._noiseSource = new NoiseSource(context);  // fricationSource
+//     this._voicingSource = new voicingSource(context);  // voicingSource
+//     this._breathSource = new breathSource(context);  // fricationSource
 //     this._filterBank = new FilterBank(context);
 //     this._primaryGain = new GainNode(context);
 //     this._lastPhoneme = null;
 //     this._speed = 1.0;
 
-//     this._filterBank.addInput(this._oscillatorSource);
-//     this._filterBank.addInput(this._noiseSource);
+//     this._filterBank.addInput(this._voicingSource);
+//     this._filterBank.addInput(this._breathSource);
 //     this._filterBank.connect(this._primaryGain);
 //     this._primaryGain.connect(this._context.destination);
 //   }
 
 //   setFrequency(freq) {
-//     this._oscillatorSource.setFrequency(freq);
-//     this._noiseSource.setFrequency(freq);
+//     this._voicingSource.setFrequency(freq);
+//     this._breathSource.setFrequency(freq);
 //   }
 
 //   setFormantScale(value) {
@@ -352,21 +358,21 @@ export class SpeechSynthesizer {
 //   }
 
 //   setWaveform(type) {
-//     this._oscillatorSource.setWaveform(type);
+//     this._voicingSource.setWaveform(type);
 //   }
 
 //   setVibratoAmount(value) {
-//     this._oscillatorSource.setModAmount(value);
+//     this._voicingSource.setModAmount(value);
 //   }
 
 //   start(time) {
-//     this._oscillatorSource.start(time);
-//     this._noiseSource.start(time);
+//     this._voicingSource.start(time);
+//     this._breathSource.start(time);
 //   }
 
 //   stop(time) {
-//     this._oscillatorSource.stop(time);
-//     this._noiseSource.stop(time);
+//     this._voicingSource.stop(time);
+//     this._breathSource.stop(time);
 //   }
 
 //   say(inputString) {
@@ -406,8 +412,8 @@ export class SpeechSynthesizer {
 //   }
 
 //   _handleAspirate(nextPhonemeName, time) {            // make nextPhonemeName=null by default
-//     this._useNoiseSource(time);
-//     this._noiseSource.amplitudeModOff(time);
+//     this._usebreathSource(time);
+//     this._breathSource.amplitudeModOff(time);
     
 //     /* The 'HH' sound is an aspirated of the next phoneme. If the next phoneme isn't a vowel, or doesn't exist, 
 //        default to using the formant frequencies of the 'AA' sound */
@@ -477,7 +483,7 @@ export class SpeechSynthesizer {
 //       duration = 0.0;
 //     }
 
-//     this._useOscillatorSource(time);
+//     this._usevoicingSource(time);
   
 
 //     // Use 4th formant filter, set at 270 for nasal cavity resonance 
@@ -498,7 +504,7 @@ export class SpeechSynthesizer {
 //       duration = 0.01; // Slightly above zero to prevent popping caused by changing the filter frequencies abruptly
 //     }
 
-//     this._useOscillatorSource(time);
+//     this._usevoicingSource(time);
     
 //     // Set the filter parameters
 //     this._filterBank.setFreqs(phoneme.freqs, time, duration);
@@ -508,13 +514,13 @@ export class SpeechSynthesizer {
 //   _handleFricative(phoneme, time) {
 //     // Voiced fricatives are synthesized with amplitude-modulated noise 
 //     if (phoneme._voiced) {
-//       this._noiseSource.amplitudeModOn(time);
+//       this._breathSource.amplitudeModOn(time);
 //     } 
 //     else {
-//       this._noiseSource.amplitudeModOff(time);
+//       this._breathSource.amplitudeModOff(time);
 //     }
 
-//     this._useNoiseSource(time);
+//     this._usebreathSource(time);
 //     this._filterBank.setFreqs(phoneme.freqs, time, 0.0);
 //     this._filterBank.setGains([1, 0, 0, 0], time, 0.0);
 //     // this.filterBank.setGains(phoneme.muls, startTime, 0.0); // This needs to be modified since there are more than 3 filters 
@@ -532,7 +538,7 @@ export class SpeechSynthesizer {
 //   }
 
 //   _handleOnGlide(phoneme, time) {
-//     this._useOscillatorSource(time); // This is necessary even if the previous sound was another stop-consonant
+//     this._usevoicingSource(time); // This is necessary even if the previous sound was another stop-consonant
 //     if (phoneme.voiced) {
 //       this._filterBank.setFreqs(phoneme.oscFreqs, time, 0.05); // 0.02?
 //       this._filterBank.soundOff(time+0.05); 
@@ -544,12 +550,12 @@ export class SpeechSynthesizer {
 //   }
 
 //   _handleNoiseBurst(phoneme, time) {
-//     this._useNoiseSource(time);
+//     this._usebreathSource(time);
 //     this._filterBank.setFreqs(phoneme.noiseFreqs, time, 0.0);
 //     this._filterBank.setGains(phoneme.noiseGains, time, 0.0);
 //     this._filterBank.soundOn(time);
-//     this._noiseSource.amplitudeModOff(time);
-//     this._noiseSource.playEnvelope(time);
+//     this._breathSource.amplitudeModOff(time);
+//     this._breathSource.playEnvelope(time);
 //   }
 
 //   _handleOffGlide(phoneme, time) {
@@ -569,13 +575,13 @@ export class SpeechSynthesizer {
 //     }
 //   }  
 
-//   _useOscillatorSource(time) {
-//     this._oscillatorSource.soundOn(time);
-//     this._noiseSource.soundOff(time);
+//   _usevoicingSource(time) {
+//     this._voicingSource.soundOn(time);
+//     this._breathSource.soundOff(time);
 //   }
 
-//   _useNoiseSource(time) {
-//     this._noiseSource.soundOn(time);
-//     this._oscillatorSource.soundOff(time);
+//   _usebreathSource(time) {
+//     this._breathSource.soundOn(time);
+//     this._voicingSource.soundOff(time);
 //   }
 // }

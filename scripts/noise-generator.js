@@ -42,4 +42,11 @@ export class NoiseGenerator extends AudioComponent {
   stop(time) {
     this.noise.stop(time);  // NOTE: 'AudioBufferSourceNode' doesn't have a stop method 
   }
+
+  cancel() {
+    super.cancel();
+    if (this.noise) {
+      this.noise.stop(this.context.currentTime);
+    }
+  }
 }

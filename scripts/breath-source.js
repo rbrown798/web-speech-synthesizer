@@ -1,5 +1,5 @@
 /*
-*   noise-source.js
+*   breath-source.js
 *   White noise generator with an amplitude modulator (for voiced fricatives) and an envelope (for stop-consonants) 
 *   Also used for aspirate phoneme 
 */
@@ -8,7 +8,7 @@ import { AudioComponent } from "./audio-component.js";
 import { NoiseGenerator } from "./noise-generator.js";
 
 
-export class NoiseSource extends AudioComponent {
+export class BreathSource extends AudioComponent {
   constructor(context) {
     super(context);
   
@@ -62,8 +62,7 @@ export class NoiseSource extends AudioComponent {
   cancel() {
     super.cancel();
     this.modGain.gain.cancelScheduledValues(this.context.currentTime);
-    if (this.noise) {
-      this.noise.stop(this.context.currentTime);
-    }
+    this.noiseGain.gain.cancelScheduledValues(this.context.currentTime);
+    this.noise.cancel();
   }
 }
