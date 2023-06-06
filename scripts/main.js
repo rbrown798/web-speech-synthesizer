@@ -25,7 +25,7 @@ const convertDiphthongs = phonemeString => {
   }
 
   for (let [diphthong, conversion] of Object.entries(conversions)) {
-    phonemeString = phonemeString.replace(diphthong, conversion);
+    phonemeString = phonemeString.replaceAll(diphthong, conversion);
   }
 
   console.log(phonemeString);

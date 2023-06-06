@@ -54,9 +54,9 @@ export class BreathSource extends AudioComponent {
   
   playEnvelope(time) {
     this.noiseGain.gain.setValueAtTime(1.0, time);
-    this.noiseGain.gain.setTargetAtTime(0.0, time, 0.02);
+    // this.noiseGain.gain.setTargetAtTime(0.0, time, 0.03);   0.02
     // Reset value 
-    this.noiseGain.gain.setValueAtTime(1.0, time+0.02);
+    // this.noiseGain.gain.setValueAtTime(1.0, time+0.1); // time+0.02 -- note, somehow this has to know the speed it is speaking at
   }
 
   cancel() {

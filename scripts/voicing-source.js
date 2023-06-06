@@ -1,5 +1,5 @@
 /*
-*   oscillator-source.js
+*   voicing-source.js
 *   Oscillator/Noise generator used for voicing in vowels/sonorants 
 */
 

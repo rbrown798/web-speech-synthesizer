@@ -53,7 +53,7 @@ a {
     
 .text-container {
     flex-grow: 1;
-    margin-right: 1.5rem;
+    /* margin-right: 1.5rem; */
 }
     
 textarea {
